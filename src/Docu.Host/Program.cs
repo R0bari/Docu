@@ -1,4 +1,5 @@
-﻿using Docu.Host;
+﻿using Docu.Application.Experts;
+using Docu.Application.Models;
 using Docu.Host.Settings;
 using Microsoft.Extensions.Configuration;
 
@@ -8,5 +9,9 @@ var config = new ConfigurationBuilder()
     .Build();
 var appSettings = config.Get<AppSettings>();
 
-var app = new App(appSettings);
-await app.Run();
+var botContext = new BotContext(
+    appSettings.TelegramSettings.Token,
+    appSettings.FileSettings.GetAllowedExtensions());
+var botExpert = new BotExpert(botContext);
+
+await botExpert.StartHandling();

@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docu.Host", "src\Docu.Host\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5C9557AF-141C-4531-9995-0FECAD78EC2B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{86FE2905-D701-4EE1-97BE-4FF267A4F529}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docu.Application", "src\Docu.Application\Docu.Application.csproj", "{459BECD9-6960-4B35-917B-D42CEC189424}"
 EndProject
 Global

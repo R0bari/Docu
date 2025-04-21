@@ -1,16 +1,22 @@
-using Docu.Host.Experts;
+using Docu.Application.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Docu.Host.Command;
+namespace Docu.Application.Experts;
 
-public sealed class CommandHandler(CommandContext context)
+public sealed class BotExpert(BotContext context)
 {
-    public void StartHandling() =>
+    public async Task StartHandling()
+    {
         context.Client.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
             context.ReceiverOptions);
+        
+        var user = await context.Client.GetMe();
+        Console.WriteLine($"Бот {user.Username} запущен...");
+        Console.ReadLine();
+    }
 
     private async Task HandleUpdateAsync(ITelegramBotClient client, Update update, CancellationToken token)
     {

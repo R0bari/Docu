@@ -1,6 +1,6 @@
 using Telegram.Bot;
 
-namespace Docu.Host.Extensions;
+namespace Docu.Application.Extensions;
 
 public static class TelegramBotClientExtensions
 {
