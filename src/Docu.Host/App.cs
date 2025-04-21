@@ -6,13 +6,13 @@ using Telegram.Bot.Types;
 
 namespace Docu.Host;
 
-public sealed class MainBot
+public sealed class App
 {
     private readonly TelegramBotClient _client;
     private readonly CommandHandler _commandHandler;
     private readonly ReceiverOptions _receiverOptions = new() { AllowedUpdates = [] };
 
-    public MainBot(AppSettings appSettings)
+    public App(AppSettings appSettings)
     {
         _client = new TelegramBotClient(appSettings.TelegramSettings.Token);
         var commandContext = new CommandContext(
@@ -23,9 +23,15 @@ public sealed class MainBot
         _commandHandler = new CommandHandler(commandContext);
     }
 
-    public void Start() =>
+    public async Task Run()
+    {
         _commandHandler.StartHandling();
+        
+        var user = await GetMe();
+        Console.WriteLine($"Бот {user.Username} запущен...");
+        Console.ReadLine();
+    }
 
-    public Task<User> GetMe() =>
+    private Task<User> GetMe() =>
         _client.GetMe();
 }

@@ -1,57 +1,40 @@
-using Docu.Application;
-using Docu.Host.Extensions;
+using Docu.Host.Experts;
 using Telegram.Bot;
-using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
 namespace Docu.Host.Command;
 
 public sealed class CommandHandler(CommandContext context)
 {
-    private readonly TelegramBotClient _client = context.Client;
-    private readonly ReceiverOptions _receiverOptions = context.ReceiverOptions;
-    private readonly string[] _allowedExtensions = context.AllowedExtensions;
-
     public void StartHandling() =>
-        _client.StartReceiving(
+        context.Client.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
-            _receiverOptions);
+            context.ReceiverOptions);
 
-    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken token)
+    private async Task HandleUpdateAsync(ITelegramBotClient client, Update update, CancellationToken token)
     {
         if (update.Message is not { } message)
             return;
 
-        var chatId = message.Chat.Id;
-
+        var chatExpert = new TelegramChatExpert(client, message.Chat.Id, token);
+        
         if (message.Document is not { } document)
         {
-            await _client.SendMessage(
-                chatId: chatId,
-                text: "Прикрепите файл",
-                cancellationToken: token);
-
+            await chatExpert.SendMessage("Прикрепите файл");
             return;
         }
 
-        if (!_allowedExtensions.Contains(Path.GetExtension(document.FileName)))
+        if (!context.AllowedExtensions.Contains(Path.GetExtension(document.FileName)))
         {
-            await _client.SendMessage(
-                chatId: chatId,
-                text: "Недопустимый формат документа",
-                cancellationToken: token);
-
+            await chatExpert.SendMessage("Недопустимый формат документа");
             return;
         }
 
-        using var docStream = await _client.DownloadFileToStream(document.FileId, token);
-        using var stream = PdfConverter.ToPdf(docStream);
+        var pdfExpert = new PdfExpert(client, token);
+        var pdfFile = await pdfExpert.Convert(document.FileId, document.FileName ?? "converted");
 
-        var fileName = Path.GetFileNameWithoutExtension(document.FileName) + ".pdf";
-        var inputFile = InputFile.FromStream(stream, fileName);
-
-        await _client.SendDocument(chatId, inputFile, cancellationToken: token);
+        await chatExpert.SendDocument(pdfFile);
     }
 
     private static Task HandleErrorAsync(

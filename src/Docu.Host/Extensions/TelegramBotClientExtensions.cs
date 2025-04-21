@@ -5,7 +5,7 @@ namespace Docu.Host.Extensions;
 public static class TelegramBotClientExtensions
 {
     public static async Task<MemoryStream> DownloadFileToStream(
-        this TelegramBotClient client,
+        this ITelegramBotClient client,
         string fileId,
         CancellationToken token)
     {

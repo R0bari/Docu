@@ -8,9 +8,5 @@ var config = new ConfigurationBuilder()
     .Build();
 var appSettings = config.Get<AppSettings>();
 
-var bot = new MainBot(appSettings);
-bot.Start();
-
-var user = await bot.GetMe();
-Console.WriteLine($"Бот {user.Username} запущен...");
-Console.ReadLine();
+var app = new App(appSettings);
+await app.Run();
